@@ -1,4 +1,4 @@
-## NVIS 3302ARD Robocar (Engineering Design Project - II)
+## NVIS 3302ARD Robocar (UTA024: Engineering Design Project - II)
 <p>
 This is a Group Project and it is offered jointly by the department of Electronics Engineering and the department of Computer Engineering to the IInd year students of all branches.
 </p>
