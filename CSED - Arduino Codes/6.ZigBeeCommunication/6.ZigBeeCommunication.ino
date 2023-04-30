@@ -1,5 +1,5 @@
 #include<NewPing.h>
-
+bool start = false;
 const int trigPin = 13;
 const int echoPin = 12;
 const int maxDistance  = 20;
@@ -13,10 +13,11 @@ void setup() {
   pinMode(7,OUTPUT); //Left Tyre +ve
   pinMode(8,OUTPUT); //Left Tyre -ve
   pinMode(A0,INPUT); //Left IR
-  pinMode(A1,INPUT); //Right IR
-  pinMode(trigPin,OUTPUT);
-  pinMode(echoPin,INPUT);
-  Serial.begin(9600);
+  pinMode(A1,INPUT);  //Right IR
+  pinMode(A2,INPUT); //Reciever Ckt
+  pinMode(trigPin,OUTPUT); //Trigger Pin Ultrasonic Sensor
+  pinMode(echoPin,INPUT);  //Echo Pin Ultrasonic Sensor
+  Serial.begin(9600); //Input From ZigBee Module
 }
 
 void Forward()
@@ -70,28 +71,46 @@ void Stop()
 }
 
 void loop() {
+  if(Serial.available())
+  {
+    char a = Serial.read();
+    if(a=='x')      //Only when the selected char is input from the Coordinator/Router XBee Module, the RoboCar will start its operation.
+    {
+      start =true;
+    }
+}
+  if(start)
+  { 
+    
+    int d0 = digitalRead(A0);
+    int d1 = digitalRead(A1);
+    int a0 = analogRead(A0);
+    int a1 = analogRead(A1);
+    if(d0 == 0 && d1 == 0)
+    {
+      Forward();
+    }
+    else if(d0 == 0)
+    {
+      //Serial.println('L');
+      Left();
+    }
+    else if(d1 == 0)
+    {
+      //Serial.println('R');
+      Right();
 
-  Forward();
-  int d0 = digitalRead(A0);
-  int d1 = digitalRead(A1);
-  if(d0 == 0 && d1 == 0)
-  {
-    Forward();
-    //Will tackle this condtion later
-  }
-  else if(d0 ==0)
-  {
-    Right();
-  }
-  else if(d1 == 0)
-  {
-    Left();
+    }
+    else
+    {
+      //Serial.println('F');
+      Forward();
+    }
   }
   distanceCm = sonar.ping_cm();
-  Serial.println(distanceCm);
   if(distanceCm>0 && distanceCm<15 )
   {
     Stop();
     delay(500);
-  }  
+  }
 }
